@@ -7,6 +7,7 @@ class Main {
 	public static final String APERTE_ENTER = "Aperte Enter para continuar";
 	public static final String DIGITE_CODIGO = "Digite o código do produto.";
 	public static final String NAO_ENCONTRADO = "Produto não encontrado.";
+
   public static void main(String[] args) {
     Scanner sc = new Scanner(System.in);
 
@@ -18,6 +19,7 @@ class Main {
       if (comando.equals("6")) {
         System.out.println("Até mais ver.");
         break;
+
       } else if (comando.equals("1")) {
         // TODO - Receber um pedido aleatório
       } else if (comando.equals("2")) {
@@ -54,12 +56,15 @@ class Main {
 
   public static int lerNumeroNaoNegativo(Scanner sc) {
 		int numero;
+
 		do {
 			numero = Integer.parseInt(sc.nextLine());
 			if (numero < 0) {
 				System.out.println("O número não pode ser negativo. Digite novamente:");
 			}
+
 		} while (numero < 0);
 		return numero;
 	}
+
 }
