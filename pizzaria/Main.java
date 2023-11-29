@@ -51,4 +51,15 @@ class Main {
 		System.out.println(imprimir);
 		System.out.println(TRAVESSAO);
 	}
+
+  public static int lerNumeroNaoNegativo(Scanner sc) {
+		int numero;
+		do {
+			numero = Integer.parseInt(sc.nextLine());
+			if (numero < 0) {
+				System.out.println("O número não pode ser negativo. Digite novamente:");
+			}
+		} while (numero < 0);
+		return numero;
+	}
 }
