@@ -16,7 +16,7 @@ public class Pedido {
 
   @Override
   public String toString() {
-    return "Pedido número " + pedidoId + ", nome do cliente: " + nomeDoCliente + "\n Sabores" + pizza.toString();
+    return "Cód.: " + pedidoId + ". Nome do cliente: " + nomeDoCliente + "\nSabores: " + pizza.toString();
   }
 
   public String getNomeDoCliente() {
