@@ -12,4 +12,8 @@ public class Pizza {
     return ingredientes[0] + ", " + ingredientes[1] + ", " + ingredientes[2] + ", " + ingredientes[3] + " e " + ingredientes[4] + ".";
   }
 
+  public String[] getSabores() {
+    return this.ingredientes;
+  }
+
 }
