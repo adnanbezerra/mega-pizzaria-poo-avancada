@@ -36,7 +36,7 @@ public class Pedido {
 
   public int contadorRepeticoes(String[] saboresDoPedidoAServir) {
     Map<String, Integer> contadorArray1 = contarElementos(saboresDoPedidoAServir);
-    Map<String, Integer> contadorArray2 = contarElementos(pizza.getSabores());
+    Map<String, Integer> contadorArray2 = contarElementos(pizza.getIngredientes());
 
     int totalRepeticoes = contarRepeticoes(contadorArray1, contadorArray2);
 

@@ -1,12 +1,13 @@
 package pizzaria;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.Map.Entry;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import objetos.Ingredientes;
 import objetos.Pedido;
 import objetos.Pizza;
 
@@ -18,12 +19,7 @@ class Main {
 
   public static void main(String[] args) {
     Scanner sc = new Scanner(System.in);
-		HashMap<String, Integer> ingredientesDisponiveis = new HashMap<String, Integer>();
-		ingredientesDisponiveis.put("Banana", 0);
-		ingredientesDisponiveis.put("Abacaxi", 0);
-		ingredientesDisponiveis.put("Jerimum", 0);
-		ingredientesDisponiveis.put("Chocolate", 0);
-		ingredientesDisponiveis.put("Sorvete de morango", 0);
+		Ingredientes ingredientesDisponiveis = new Ingredientes();
 		ArrayList<Pizza> pizzasDisponiveis = new ArrayList<>();
 		LinkedBlockingQueue<Pedido> filaPedidos = new LinkedBlockingQueue<Pedido>();
 		String[] nomesDisponiveis = {"Adnan", "Caio", "Gizele", "Natália", "Layla", "Adeval", "Lucas"};
@@ -45,7 +41,7 @@ class Main {
 				String confirmacao = sc.nextLine();
 
 				if (confirmacao.equals("s") || confirmacao.equals("S")) {
-					String[] ingredientes = getNomeAleatorio(ingredientesDisponiveis.keySet().toArray(new String[0]), 5);
+					String[] ingredientes = getNomeAleatorio(ingredientesDisponiveis.toArray(), 5);
 					Pizza novaPizza = new Pizza(ingredientes);
 
 					String nomeDoCliente = getNomeAleatorio(nomesDisponiveis, 1)[0];
@@ -60,8 +56,7 @@ class Main {
       } else if (comando.equals("2")) {
         // Olhar pedido atual
 
-				imprimeEntreTravessao("Pedido atual:");
-				System.out.println(filaPedidos.peek());
+				imprimeEntreTravessao("Pedido atual:\n" + filaPedidos.peek());
 
 				System.out.println(APERTE_ENTER);
 				sc.nextLine();
@@ -73,9 +68,9 @@ class Main {
 
 				for (int i = 0; i < 5; i++) {
 					System.out.println("Insira o código do ingrediente a ser adicionado!");
-					listarIngredientes(ingredientesDisponiveis.keySet().toArray(new String[0]));
+					listarIngredientes(ingredientesDisponiveis.toArray());
 					int escolhido = Integer.parseInt(sc.nextLine());
-					ingredientesAAdicionar[i] = ingredientesDisponiveis.keySet().toArray(new String[0])[escolhido - 1];
+					ingredientesAAdicionar[i] = ingredientesDisponiveis.toArray()[escolhido - 1];
 				}
 
 				pizzasDisponiveis.add(new Pizza(ingredientesAAdicionar));
@@ -95,12 +90,18 @@ class Main {
 					System.out.println("Digite o código:");
 
 					int escolhido = Integer.parseInt(sc.nextLine());
+					Pizza pizzaEscolhida = pizzasDisponiveis.get(escolhido - 1);
 					pizzasDisponiveis.remove(escolhido - 1);
 					Pedido servido = filaPedidos.poll();
 					pedidosServidos.add(servido);
+					int saboresCompativeis = servido.contadorRepeticoes(pizzaEscolhida.getIngredientes());
+					ingredientesDisponiveis.atualizaMediaDeIngredientesCompativeis(saboresCompativeis);
+					ingredientesDisponiveis.consumirIngredientes(pizzaEscolhida);
+
+					imprimeEntreTravessao("Pizza servida com sucesso!");
 
 				} else {
-					System.out.println("Não há nenhum pedido na fila!");
+					imprimeEntreTravessao("Não há nenhum pedido na fila!");
 				}
 
 				System.out.println(APERTE_ENTER);
@@ -115,28 +116,24 @@ class Main {
 				int quantidadeDePedidos = pedidosServidos.size();
 				if (quantidadeDePedidos == 0) {
 					System.out.println("Nenhuma pizza pedida ainda");
+				} else if (quantidadeDePedidos == 1) {
+					System.out.println(quantidadeDePedidos + " pizza foi servida.");
 				} else {
-					if (quantidadeDePedidos == 1) {
-						System.out.println(quantidadeDePedidos + " pizza foi servida.");
-					} else {
-						System.out.println(quantidadeDePedidos + " pizzas foram servidas.");
-					}
-					
+					System.out.println(quantidadeDePedidos + " pizzas foram servidas.");	
 				}
 
-				System.out.println(TRAVESSAO);
-
-//				double mediaDeIngredientes = getMediaDeIngredientes(pedidosServidos, pedidos);
-//				System.out.printf("Média de sabores de pizza: %.2f%n", mediaDeIngredientes);
-
-//				Entry<String, Integer> saborMaisPedido = ingredientesDisponiveis.getMaisUsado();
-//				System.out.println("Sabor de pizza mais pedido: " + saborMaisPedido.getKey() + ". Quantidade de pedidos: " + saborMaisPedido.getValue());
+				Entry<String, Integer> saborMaisPedido = ingredientesDisponiveis.getIngredienteMaisPedido();
+				System.out.println("Sabor de pizza mais pedido: " + saborMaisPedido.getKey() + ". Quantidade de pedidos: " + saborMaisPedido.getValue());
 				
-//				String saboresNaoPedidos = ingredientesDisponiveis.getNaoUsados();
-//				System.out.println("Sabores não pedidos: " + saboresNaoPedidos);
+				String saboresNaoPedidos = ingredientesDisponiveis.getNaoUsados();
+				System.out.println("Sabores não utilizados: " + saboresNaoPedidos);
+
+				System.out.println("Quantos pedidos estão na fila: " + filaPedidos.size());
+
+				double mediaDeIngredientes = ingredientesDisponiveis.getMediaDeIngredientes();
+				System.out.printf("Média de sabores corretos por pizza: %.2f%n", mediaDeIngredientes);
 
 				System.out.println(TRAVESSAO);
-
 				System.out.println(APERTE_ENTER);
 				sc.nextLine();
       }
@@ -165,7 +162,7 @@ class Main {
 
 	public static void listarPizzasComCompatibilidades(Pedido pedidoAServir, List<Pizza> pizzasDisponiveis) {
 		for (int i = 0; i < pizzasDisponiveis.size(); i++) {
-			int compatibilidade = pedidoAServir.contadorRepeticoes(pizzasDisponiveis.get(i).getSabores());
+			int compatibilidade = pedidoAServir.contadorRepeticoes(pizzasDisponiveis.get(i).getIngredientes());
 
 			if (compatibilidade >= 3) {
 				System.out.println("Cód.: " + i+1 + "| Pizza de " + pizzasDisponiveis.get(i).toString());
@@ -180,19 +177,6 @@ class Main {
 		System.out.println(TRAVESSAO);
 	}
 
-  public static int lerNumeroNaoNegativo(Scanner sc) {
-		int numero;
-
-		do {
-			numero = Integer.parseInt(sc.nextLine());
-			if (numero < 0) {
-				System.out.println("O número não pode ser negativo. Digite novamente:");
-			}
-
-		} while (numero < 0);
-		return numero;
-	}
-
 	public static String[] getNomeAleatorio(String[] entrada, int quantidade) {
 		String[] saida = new String[5];
 
@@ -202,6 +186,21 @@ class Main {
 		}
 
 		return saida;
+	}
+
+	public static double getMediaDeIngredientes(List<Pedido> pedidos, LinkedBlockingQueue<Pedido> pedidosAtivos) {
+		double media = 1;
+
+		for (Pedido each : pedidos) {
+				media = (each.getPizza().getIngredientes().length + media) / 2;
+		}
+
+		for (int i = 0; i < pedidosAtivos.toArray().length; i++) {
+			Pedido pedido = (Pedido) pedidosAtivos.toArray()[i];
+			media = (media + pedido.getPizza().getIngredientes().length) / 2;
+		}
+
+		return media;
 	}
 
 }

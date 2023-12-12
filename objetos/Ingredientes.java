@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 public class Ingredientes {
   private HashMap<String, Integer> ingredientes;
+  double mediaDeIngredientesCompativeis;
 
   public Ingredientes() {
     ingredientes = new HashMap<>();
@@ -16,14 +17,15 @@ public class Ingredientes {
 		ingredientes.put("Jerimum", 0);
 		ingredientes.put("Chocolate", 0);
 		ingredientes.put("Sorvete de morango", 0);
+    mediaDeIngredientesCompativeis = 0;
   }
 
   public String[] toArray() {
     return ingredientes.keySet().toArray(new String[0]);
   }
 
-  public void consumirIngredientes(Pedido pedidoServido) {
-    String[] ingredientesUtilizados = pedidoServido.getPizza().getIngredientes();
+  public void consumirIngredientes(Pizza pizzaServida) {
+    String[] ingredientesUtilizados = pizzaServida.getIngredientes();
 
     for (String ingrediente : ingredientesUtilizados) {
       int valorAntigo = ingredientes.get(ingrediente);
@@ -58,6 +60,18 @@ public class Ingredientes {
     String result = naoUsados.stream().collect(Collectors.joining(", "));
     
     return result.substring(0, 1).toUpperCase() + result.substring(1);
+  }
+
+  public void atualizaMediaDeIngredientesCompativeis(int novoNumero) {
+    if(this.mediaDeIngredientesCompativeis == 0) {
+      this.mediaDeIngredientesCompativeis = novoNumero;
+    } else {
+      this.mediaDeIngredientesCompativeis = (this.mediaDeIngredientesCompativeis + novoNumero) / 2;
+    }
+  }
+
+  public double getMediaDeIngredientes() {
+    return this.mediaDeIngredientesCompativeis;
   }
 
 }
