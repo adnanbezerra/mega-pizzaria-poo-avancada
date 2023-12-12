@@ -136,7 +136,9 @@ class Main {
 				System.out.println(TRAVESSAO);
 				System.out.println(APERTE_ENTER);
 				sc.nextLine();
-      }
+      } else {
+				imprimeEntreTravessao("Insira um comando válido!");
+			}
     }
 
     sc.close();
