@@ -86,19 +86,24 @@ class Main {
 					Pedido pedidoAServir = filaPedidos.peek();
 					System.out.println("Próximo pedido: " + pedidoAServir.toString());
 					System.out.println("Lista de pizzas compativeis para servir:");
-					listarPizzasComCompatibilidades(pedidoAServir, pizzasDisponiveis);
+					int compativeis = listarPizzasComCompatibilidades(pedidoAServir, pizzasDisponiveis);
+
+					if (compativeis > 0) {
+
 					System.out.println("Digite o código:");
+						int escolhido = Integer.parseInt(sc.nextLine());
+						Pizza pizzaEscolhida = pizzasDisponiveis.get(escolhido - 1);
+						pizzasDisponiveis.remove(escolhido - 1);
+						Pedido servido = filaPedidos.poll();
+						pedidosServidos.add(servido);
+						int saboresCompativeis = servido.contadorRepeticoes(pizzaEscolhida.getIngredientes());
+						ingredientesDisponiveis.atualizaMediaDeIngredientesCompativeis(saboresCompativeis);
+						ingredientesDisponiveis.consumirIngredientes(pizzaEscolhida);
 
-					int escolhido = Integer.parseInt(sc.nextLine());
-					Pizza pizzaEscolhida = pizzasDisponiveis.get(escolhido - 1);
-					pizzasDisponiveis.remove(escolhido - 1);
-					Pedido servido = filaPedidos.poll();
-					pedidosServidos.add(servido);
-					int saboresCompativeis = servido.contadorRepeticoes(pizzaEscolhida.getIngredientes());
-					ingredientesDisponiveis.atualizaMediaDeIngredientesCompativeis(saboresCompativeis);
-					ingredientesDisponiveis.consumirIngredientes(pizzaEscolhida);
-
-					imprimeEntreTravessao("Pizza servida com sucesso!");
+						imprimeEntreTravessao("Pizza servida com sucesso!");
+					} else {
+						imprimeEntreTravessao("Não há nenhuma pizza compatível para servir!");
+					}
 
 				} else {
 					imprimeEntreTravessao("Não há nenhum pedido na fila!");
@@ -162,15 +167,20 @@ class Main {
 		}
 	}
 
-	public static void listarPizzasComCompatibilidades(Pedido pedidoAServir, List<Pizza> pizzasDisponiveis) {
+	public static int listarPizzasComCompatibilidades(Pedido pedidoAServir, List<Pizza> pizzasDisponiveis) {
+		int contadorDeCompativeis = 0;
+
 		for (int i = 0; i < pizzasDisponiveis.size(); i++) {
 			int compatibilidade = pedidoAServir.contadorRepeticoes(pizzasDisponiveis.get(i).getIngredientes());
 
 			if (compatibilidade >= 3) {
 				System.out.println("Cód.: " + (i+1) + "| Pizza de " + pizzasDisponiveis.get(i).toString());
 				System.out.println("Compatibilidade de " + compatibilidade + "/5");
+				contadorDeCompativeis++;
 			}
 		}
+
+		return contadorDeCompativeis;
 	}
 
 	public static void imprimeEntreTravessao(String imprimir) {
