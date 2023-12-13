@@ -167,7 +167,7 @@ class Main {
 			int compatibilidade = pedidoAServir.contadorRepeticoes(pizzasDisponiveis.get(i).getIngredientes());
 
 			if (compatibilidade >= 3) {
-				System.out.println("Cód.: " + i+1 + "| Pizza de " + pizzasDisponiveis.get(i).toString());
+				System.out.println("Cód.: " + (i+1) + "| Pizza de " + pizzasDisponiveis.get(i).toString());
 				System.out.println("Compatibilidade de " + compatibilidade + "/5");
 			}
 		}
